@@ -27,11 +27,11 @@ class contentApp (webapp.webApp):
 
     def imprim(self,lista):
         indice=0
+        urls=''
         for elemento in lista:
-            urls= ('url corta: ' + 'http://localhost:1234/' + str(indice) + ' url original: ' + elemento + '\n')
-            indice+=1
-            return urls
-        return ''
+            urls += ('url corta: ' + 'http://localhost:1234/' + str(indice) + ' url original: ' + elemento + '\r\n')
+            indice +=1
+        return urls
 
     def parse(self, request):
         """Return the resource name (including /)"""
@@ -72,7 +72,7 @@ class contentApp (webapp.webApp):
                 
         elif resourceName[0] == 'GET':
             if resourceName[1] == '/':
-                print self.imprim(self.lista)
+                print (self.lista)
                 httpCode = "200 OK"
                 htmlBody =  "<html><body>" + formulario +'<p>'+ self.imprim(self.lista) +'</p></body></html>'
             else:
