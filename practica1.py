@@ -62,23 +62,23 @@ class contentApp (webapp.webApp):
                 try:
                     corta= self.content[url] #hacerlo tambien si en el post va la acortada?
                     httpCode = "200 OK"
-                    htmlBody = "<html><body>" + '<a href='+ url+ '>    larga   </a>' + '<a href= http://localhost:1234/'+ str(corta) + '>corta</a>' + formulario +'</body></html>'
+                    htmlBody = "<html><body>" + formulario +'<a href='+ url+ '>    larga   </a>' + '<a href= http://localhost:1234/'+ str(corta) + '>corta</a>' + '</body></html>'
                 except KeyError:
                     self.lista.append(url)
                     self.content[url]=len(self.lista)-1
                     httpCode = "200 OK"
-                    htmlBody = htmlBody = "<html><body>" + '<a href='+ url+ '>larga</a>' + '<a href= http://localhost:1234/'+ str(self.content[url]) + '>corta</a>' + formulario +'</body></html>'
-                    
+                    htmlBody = htmlBody = "<html><body>" + formulario + '<a href='+ url+ '>larga</a>' + '<a href= http://localhost:1234/'+ str(self.content[url]) + '>corta</a>' + '</body></html>'
+                return (httpCode, htmlBody)    
                 
         elif resourceName[0] == 'GET':
             if resourceName[1] == '/':
-                print (self.lista)
                 httpCode = "200 OK"
                 htmlBody =  "<html><body>" + formulario +'<p>'+ self.imprim(self.lista) +'</p></body></html>'
+                return (httpCode, htmlBody)
             else:
-                httpCode = "404 Not Found"
-                htmlBody = "<html><body>Not Found" + formulario
-        return (httpCode, htmlBody)
+                url= self.content(resourceName[1][1:])
+                return("300 Redirect", "<html><head><meta http-equiv='refresh' content='0;url="+ str(self.lista[indice])+ "'></head></html>")
+        
 
 
 if __name__ == "__main__":
