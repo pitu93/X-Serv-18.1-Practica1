@@ -14,7 +14,7 @@
 import webapp
 
 
-class contentApp (webapp.webApp):
+class urlApp (webapp.webApp):
     """Simple web application for managing content.
 
     Content is stored in a dictionary, which is intialized
@@ -29,7 +29,7 @@ class contentApp (webapp.webApp):
         indice=0
         urls=''
         for elemento in lista:
-            urls += ('url corta: ' + 'http://localhost:1234/' + str(indice) + ' url original: ' + elemento + '\r\n')
+            urls += ('<p> url corta: ' + 'http://localhost:1234/' + str(indice) + ' url original: ' + elemento + '</p>' )
             indice +=1
         return urls
 
@@ -50,19 +50,19 @@ class contentApp (webapp.webApp):
         ignoring requests for resources not in the dictionary.
         """
         formulario= "<form action='' method='POST'>Escribe una url: <input type='text' name='nombre' value='' /><br/><input type='submit'   value='Enviar' /></form>"
-        #o se mete mal en la lista o se imprime mal
+
         if resourceName[0] == 'POST':
             if resourceName[1] == '/':
-                url = str(resourceName[2]).split("=")[1] #error si no viene de formulario
+                url = str(resourceName[2]).split("=")[1] 
                 print 'URLLL' + url
                 if url.startswith('http'):
                     url = 'http://' + url.split("%2F%2F", 2)[1]
                 else:
                     url= 'http://' + url
                 try:
-                    corta= self.content[url] #hacerlo tambien si en el post va la acortada?
+                    corta= self.content[url] 
                     httpCode = "200 OK"
-                    htmlBody = "<html><body>" + formulario +'<a href='+ url+ '>    larga   </a>' + '<a href= http://localhost:1234/'+ str(corta) + '>corta</a>' + '</body></html>'
+                    htmlBody = "<html><body>" + formulario +'<a href='+ url+ '>larga</a>' + '<a href= http://localhost:1234/'+ str(corta) + '>corta</a>' + '</body></html>'
                 except KeyError:
                     self.lista.append(url)
                     self.content[url]=len(self.lista)-1
@@ -76,10 +76,17 @@ class contentApp (webapp.webApp):
                 htmlBody =  "<html><body>" + formulario +'<p>'+ self.imprim(self.lista) +'</p></body></html>'
                 return (httpCode, htmlBody)
             else:
-                url= self.content(resourceName[1][1:])
-                return("300 Redirect", "<html><head><meta http-equiv='refresh' content='0;url="+ str(self.lista[indice])+ "'></head></html>")
-        
-
+                try:
+                    url= self.lista[int(resourceName[1][1:])]
+                    return("300 Redirect", "<html><head><meta http-equiv='refresh' content='0;url="+ url + "'></head></html>")
+                except KeyError:
+                    httpCode = "404 Not Found"
+                    htmlBody =  "<html><body>" + formulario +'<p>Recurso no encontrado</p></body></html>'
+                    return (httpCode, htmlBody)
+                except IndexError:
+                    httpCode = "404 Not Found"
+                    htmlBody =  "<html><body>" + formulario +'<p>Recurso no encontrado</p></body></html>'
+                    return (httpCode, htmlBody)
 
 if __name__ == "__main__":
-    testWebApp = contentApp("localhost", 1234)
+    testWebApp = urlApp("localhost", 1234)
